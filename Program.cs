@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace MrResXtractor
                 files = files.FindAll(x => x.ToLower().Replace(".resx", "").EndsWith("." + language));
             }
             
-            string output = @"c:\temp\resx-files-" + (language != null ? (language + "-") : "") + DateTime.Now.Ticks + ".xlsx";
+            string output = outputPath + @"\resx-files-" + (language != null ? (language + "-") : "") + DateTime.Now.Ticks + ".xlsx";
 
             using (var pck = new OfficeOpenXml.ExcelPackage())
             {
@@ -41,14 +41,14 @@ namespace MrResXtractor
                     string fileName = file.Split(@"\")[file.Split(@"\").Count() - 1];
                     string sheet = fileName.ToLower().Replace(".", "-").Replace("-resx", "");
 
+                    /* Avoid error due to max length of a sheet title */
                     if (sheet.Length > 31) {
                         sheet = sheet.Split("-")[0].Substring(0, 28) + "-" + sheet.Split("-")[1];
                     }
 
                     pck.Workbook.Worksheets.Add(sheet);
                     var ws = pck.Workbook.Worksheets[sheet];  
-                    ws.InsertRow(row, 1);
-                    
+                       
                     XmlNodeList translations = xmlDoc.GetElementsByTagName("data");
                     
                     foreach (XmlNode translation in translations) {
@@ -67,5 +67,3 @@ namespace MrResXtractor
         }
     }
 }
-
-                    
